@@ -1,19 +1,26 @@
 // Pagination-server
 // product-data
 
+require('dotenv').config()
 const express = require('express')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 const cors = require('cors')
 const color = require('colors')
 const PORT = process.env.PORT || 5000
-require('dotenv').config()
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
+// const uri = process.env.MongoDb
+// // const uri = 'mongodb://localhost:27017'
+// const client = new MongoClient(uri, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   serverApi: ServerApiVersion.v1,
+// })
+
 const uri = process.env.MongoDb
-// const uri = 'mongodb://localhost:27017'
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -23,9 +30,15 @@ const client = new MongoClient(uri, {
 const run = async () => {
   try {
     // database create
+
     const database = client.db('Pagination-server')
     const Product_Data = database.collection('product-data2')
 
+    app.get('/alls', async (req, res) => {
+      const query = {}
+      const products = await Product_Data.find(query).toArray()
+      res.send(products)
+    })
     // get data
     app.get('/product-data', async (req, res) => {
       const currentPage = parseInt(req.query.page)
@@ -55,7 +68,6 @@ const run = async () => {
         .limit(size)
         .toArray()
       const count = await Product_Data.countDocuments()
-      console.log(products, count)
       res.send({ count, products })
     })
   } finally {
