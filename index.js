@@ -70,6 +70,15 @@ const run = async () => {
       const count = await Product_Data.countDocuments()
       res.send({ count, products })
     })
+
+    app.get('/product-data/category', async (req, res) => {
+      const query = {}
+      const products = await Product_Data.find(query, {
+        category: 1,
+        title: 0,
+      }).toArray()
+      res.send(products)
+    })
   } finally {
   }
 }
